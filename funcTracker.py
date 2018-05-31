@@ -8,12 +8,13 @@ from idaapi import *
 from idc import *
 import re
 MAXDEEPCOUNT = 5
-pattCall = re.compile('call[\x20\t]+(.+)')
+#pattCall = re.compile('call[\x20\t]+(.+)')
+pattCall = re.compile('call[\x20\t]+(.[^;]+)')  #fix problem like "call yFnToLib_memcpy ; sub_49A232()"
 
 def guessFuncName(guessAddr, deepCount = 0):
 	currGuessNm = ''
 	if deepCount > MAXDEEPCOUNT: return currGuessNm # tooooooo deep, stop it!
-	
+	#print "guessAsddr= %x" % guessAddr
 	(startea, endea) = Chunks(guessAddr).next() # function range
 	print '%s - %s@%x' % ('\t' * deepCount,GetFunctionName(startea), startea)
 	
@@ -25,13 +26,17 @@ def guessFuncName(guessAddr, deepCount = 0):
 			continue
 			
 		funcName = matcher.group(1)
-		print '\t' * (deepCount + 1) + 'call ' + funcName
+		print '\t' * (deepCount + 1) + 'call ' + funcName  + "    at: %x " % head   #add called addr.
 		
 		if not 'sub_' in funcName:
 			currGuessNm += '|%s\n' % funcName 
 			
 		else:
+			
 			subFuncAddr = LocByName(funcName) # sub function address
+			#print " want guessed Sub Func name= %s  addr= %x" % (funcName,subFuncAddr)
+			if subFuncAddr==BADADDR:
+			     print "will terminal,because invalid FuncAddr: %x  by FuncName %s." %(subFuncAddr, funcName)
 			currGuessNm += guessFuncName(subFuncAddr, deepCount + 1)
 	
 	currGuessNm = re.sub(r"ds:|__imp_", "", currGuessNm)
