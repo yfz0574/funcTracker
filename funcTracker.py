@@ -28,7 +28,7 @@ def guessFuncName(guessAddr, deepCount = 0):
 		funcName = matcher.group(1)
 		print '\t' * (deepCount + 1) + 'call ' + funcName  + "    at: %x " % head   #add called addr.
 		
-		if not 'sub_' in funcName:
+		if not funcName.startswith('sub_'):  #fix bug like: ysub_400111 
 			currGuessNm += '|%s\n' % funcName 
 			
 		else:
