@@ -9,7 +9,7 @@ from idc import *
 import re
 MAXDEEPCOUNT = 5
 #pattCall = re.compile('call[\x20\t]+(.+)')
-pattCall = re.compile('call[\x20\t]+(.[^;]+)')  #fix problem like "call yFnToLib_memcpy ; sub_49A232()"
+pattCall = re.compile('call[\x20\t]+(.[^;]+)')  #fix problem like "call FnToLib_memcpy ; sub_49A232()"
 
 def guessFuncName(guessAddr, deepCount = 0):
 	currGuessNm = ''
